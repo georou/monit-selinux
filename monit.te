@@ -36,17 +36,22 @@ logging_log_file(monit_log_t)
 type monit_pid_t alias monit_run_t;
 files_pid_file(monit_pid_t)
 
+#type monit_unit_t;
+#init_unit_file(monit_unit_t)
+
 type monit_unit_t;
-init_unit_file(monit_unit_t)
+systemd_unit_file(monit_unit_t)
 
 type monit_var_lib_t;
 files_type(monit_var_lib_t)
+
+type monit_port_t;
+corenet_port(monit_port_t)
 
 ########################################
 #
 # Common monit domain policy
 #
-
 allow monit_domain self:unix_stream_socket create_stream_socket_perms;
 allow monit_domain monit_t:process { getpgid sigkill signal };
 
@@ -54,7 +59,11 @@ allow monit_domain monit_conf_t:dir list_dir_perms;
 allow monit_domain monit_conf_t:file read_file_perms;
 allow monit_domain monit_conf_t:lnk_file read_lnk_file_perms;
 
-kernel_read_system_state(monit_domain)
+# Incompatibility between RedHat and refpolicy - can not associate type attributes with a type attribute
+# See: https://github.com/fedora-selinux/selinux-policy/blob/rawhide/policy/modules/kernel/kernel.if#L1118
+# And: https://github.com/TresysTechnology/refpolicy/blob/master/policy/modules/kernel/kernel.if#L1107
+#kernel_read_system_state(monit_domain)
+kernel_read_system_state(monit_t)
 
 # can not use with attributes
 #auth_use_nsswitch(monit_domain)
@@ -64,7 +73,8 @@ dev_read_sysfs(monit_domain)
 dev_read_urand(monit_domain)
 
 fs_getattr_dos_fs(monit_domain)
-fs_getattr_dos_dirs(monit_domain)
+# fs is used in RedHat policy instead of dirs
+#fs_getattr_dos_dirs(monit_domain)
 fs_getattr_tmpfs(monit_domain)
 fs_getattr_xattr_fs(monit_domain)
 
@@ -89,6 +99,7 @@ allow monit_t self:fifo_file rw_fifo_file_perms;
 allow monit_t self:rawip_socket connected_socket_perms;
 allow monit_t self:tcp_socket server_stream_socket_perms;
 allow monit_t self:unix_dgram_socket { connect create };
+allow monit_t monit_port_t:tcp_socket name_bind;
 
 allow monit_t monit_log_t:file { create read_file_perms append_file_perms };
 logging_log_filetrans(monit_t, monit_log_t, file)
@@ -104,7 +115,7 @@ auth_use_nsswitch(monit_t)
 corecmd_exec_bin(monit_t)
 
 corenet_tcp_bind_generic_node(monit_t)
-corenet_tcp_bind_monit_port(monit_t)
+#corenet_tcp_bind_monit_port(monit_t)
 corenet_tcp_connect_all_ports(monit_t)
 
 domain_getpgid_all_domains(monit_t)
@@ -120,11 +131,7 @@ ifdef(`hide_broken_symptoms',`
 ')
 
 tunable_policy(`monit_startstop_services',`
-	init_get_all_units_status(monit_t)
-	init_get_system_status(monit_t)
-	init_start_all_units(monit_t)
-	init_stop_all_units(monit_t)
-	init_stream_connect(monit_t)
+	# Put start / stop interfaces here
 ')
 
 optional_policy(`
@@ -143,11 +150,14 @@ allow monit_cli_t monit_pid_t:file rw_file_perms;
 allow monit_cli_t monit_var_lib_t:dir search_dir_perms;
 allow monit_cli_t monit_var_lib_t:file rw_file_perms;
 
+allow monit_t monit_port_t:tcp_socket name_bind;
+
 auth_use_nsswitch(monit_cli_t)
 
-corecmd_check_exec_bin_files(monit_cli_t)
+corecmd_check_exec_shell(monit_cli_t)
 
-corenet_tcp_connect_monit_port(monit_cli_t)
+corenet_tcp_bind_generic_node(monit_t)
+#corenet_tcp_connect_monit_port(monit_cli_t)
 
 dev_read_rand(monit_cli_t)
 
