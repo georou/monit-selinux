@@ -1,4 +1,4 @@
-policy_module(monit, 1.0.2)
+policy_module(monit, 1.0.3)
 
 ########################################
 #
@@ -80,6 +80,8 @@ fs_getattr_xattr_fs(monit_domain)
 
 miscfiles_read_localization(monit_domain)
 
+# read disk usage
+storage_getattr_fixed_disk_dev(monit_domain)
 # disk usage of sd card
 storage_getattr_removable_dev(monit_domain)
 
