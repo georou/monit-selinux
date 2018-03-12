@@ -21,6 +21,24 @@ interface(`monit_domtrans_cli',`
 
 ########################################
 ## <summary>
+##      Allow domain to name_connect to monit tcp port
+## </summary>
+## <param name="domain">
+##      <summary>
+##      Domain allowed access.
+##      </summary>
+## </param>
+#
+interface(`monit_tcp_connect_port',`
+	gen_require(`
+		type monit_port_t;
+	')
+
+	allow $1 monit_port_t:tcp_socket name_connect;
+')
+
+########################################
+## <summary>
 ##	Execute monit in the monit cli domain,
 ##	and allow the specified role
 ##	the monit cli domain.
