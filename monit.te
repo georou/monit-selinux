@@ -1,4 +1,4 @@
-policy_module(monit, 1.0.3.5)
+policy_module(monit, 1.0.3.6)
 
 ########################################
 #
@@ -111,6 +111,7 @@ files_pid_filetrans(monit_t, monit_pid_t, file)
 
 allow monit_t monit_var_lib_t:dir manage_dir_perms;
 allow monit_t monit_var_lib_t:file manage_file_perms;
+files_var_lib_filetrans(monit_t, monit_var_lib_t, { dir file })
 
 auth_use_nsswitch(monit_t)
 
@@ -152,8 +153,6 @@ allow monit_cli_t monit_pid_t:file rw_file_perms;
 
 allow monit_cli_t monit_var_lib_t:dir search_dir_perms;
 allow monit_cli_t monit_var_lib_t:file rw_file_perms;
-
-allow monit_t monit_port_t:tcp_socket name_bind;
 
 auth_use_nsswitch(monit_cli_t)
 
