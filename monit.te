@@ -1,4 +1,4 @@
-policy_module(monit, 1.0.3.6)
+policy_module(monit, 1.0.3.7)
 
 ########################################
 #
@@ -114,6 +114,8 @@ allow monit_t monit_var_lib_t:file manage_file_perms;
 files_var_lib_filetrans(monit_t, monit_var_lib_t, { dir file })
 
 auth_use_nsswitch(monit_t)
+
+kernel_read_fs_sysctls(monit_t)
 
 corecmd_exec_bin(monit_t)
 
