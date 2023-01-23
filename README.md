@@ -1,5 +1,5 @@
 # monit-selinux
-Monit 5.25.1 SELinux policy module for CentOS 7 &amp; RHEL 7 systems with systemd. This policy now follows the monit rpm package provided in the EPEL repo.
+Monit 5.30.0-1 SELinux policy module for CentOS 7 &amp; RHEL 7 systems with systemd. This policy now follows the monit rpm package provided in the EPEL repo.
 
 Forked from [Tresys' Ref Policy](https://github.com/TresysTechnology/refpolicy-contrib/blob/aede270ab97e863cbe2b8a1459b8c72ae5786356/monit.te) and tweaked to work with Red Hat's policy & systemd.
 
